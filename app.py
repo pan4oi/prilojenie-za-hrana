@@ -50,7 +50,7 @@ def optimize_image(image):
     img = ImageEnhance.Sharpness(img).enhance(2.0)
     return img
 
-st.title("🥗 SafeFood AI: Твоят личен лаборант")
+st.title("🥗 HealthyFood AI: Твоят личен лаборант")
 st.write("Провери какво реално съдържа храната ти само със снимка.")
 st.divider()
 
