@@ -3,7 +3,7 @@ import easyocr
 from PIL import Image, ImageOps, ImageEnhance
 import numpy as np
 
-st.set_page_config(page_title="SafeFood AI Expert", page_icon="🥗", layout="wide")
+st.set_page_config(page_title="HealthyFood AI Expert", page_icon="🥗", layout="wide")
 
 st.sidebar.header("🎨 Настройки на изгледа")
 theme_choice = st.sidebar.select_slider(
