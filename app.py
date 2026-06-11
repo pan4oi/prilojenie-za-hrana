@@ -164,5 +164,3 @@ if image is not None:
                     
     else:
         st.warning("⚠️ HealthyFood AI не откри познати съставки в този етикет. Опитайте с по-ясно изображение.")
-
-```
