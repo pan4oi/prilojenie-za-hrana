@@ -12,16 +12,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Стилизиране с малко вграден CSS за по-модерна визия
-st.markdown("""
-    <style>
-    .block-container { padding-top: 2rem; }
-    .stRadio > div { flex-direction: row; justify-content: center; }
-    div[data-testid="stMetricValue"] { font-size: 24px; text-align: center; }
-    div[data-testid="stMetricLabel"] { text-align: center; }
-    </style>
-""", unsafe_html=True)
-
 # 2. Инициализиране и кеширане на EasyOCR
 @st.cache_resource
 def load_ocr():
