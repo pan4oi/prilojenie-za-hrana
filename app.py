@@ -68,9 +68,9 @@ SEARCH_MAPPING = {
 }
 
 # 5. Потребителски интерфейс (Front-End)
-st.markdown("<h1 style='text-align: center; color: #2E7D32;'>🥗 HealthyFood AI</h1>", unsafe_html=True)
-st.markdown("<p style='text-align: center; color: #666;'>Интелигентен скенер на етикети. Разберете какво съдържа храната ви и как влияе на здравето ви.</p>", unsafe_html=True)
-st.hr()
+st.title("🥗 HealthyFood AI")
+st.caption("Интелигентен скенер на етикети. Разберете какво съдържа храната ви и как влияе на здравето ви.")
+st.divider()
 
 # Избор на източник
 source_option = st.radio("Изберете метод на сканиране:", ("Качване на снимка", "Снимане с камера"), label_visibility="collapsed")
@@ -90,7 +90,7 @@ with col2:
 
 # 6. Обработка на изображението
 if image is not None:
-    st.markdown("### 📸 Сканиран етикет")
+    st.subheader("📸 Сканиран етикет")
     st.image(image, use_container_width=True)
 
     with st.spinner('🕵️‍♂️ HealthyFood AI анализира текста...'):
@@ -117,8 +117,8 @@ if image is not None:
                     added_ingredients.add(real_name)
                     break
 
-    st.markdown("---")
-    st.markdown("## 📊 Резултати от анализа")
+    st.divider()
+    st.subheader("📊 Резултати от анализа")
 
     if found_ingredients:
         # Разделяне на съставките по категории за статистика
@@ -132,7 +132,7 @@ if image is not None:
         m2.metric(label="⚪ Безвредни", value=len(bezvredni))
         m3.metric(label="🔴 Вредни", value=len(vredni))
 
-        st.markdown("### 📋 Детайлен преглед:")
+        st.subheader("📋 Детайлен преглед:")
 
         # Показване на ПОЛЕЗНИТЕ (Зелени карти)
         if polezni:
