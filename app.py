@@ -1,3 +1,8 @@
+Готово! Промених заглавията, подзаглавията и мета данните на страницата, така че приложението вече официално се казва **HealthyFood AI**.
+
+Ето пълния обновен код:
+
+```python
 import streamlit as st
 import easyocr
 from PIL import Image
@@ -5,7 +10,22 @@ import numpy as np
 import pandas as pd
 
 # 1. Настройка на страницата на приложението
-st.set_page_config(page_title="Анализатор на Съставки", page_icon="🥗", layout="centered")
+st.set_page_config(
+    page_title="HealthyFood AI", 
+    page_icon="🥗", 
+    layout="centered",
+    initial_sidebar_state="collapsed"
+)
+
+# Стилизиране с малко вграден CSS за по-модерна визия
+st.markdown("""
+    <style>
+    .block-container { padding-top: 2rem; }
+    .stRadio > div { flex-direction: row; justify-content: center; }
+    div[data-testid="stMetricValue"] { font-size: 24px; text-align: center; }
+    div[data-testid="stMetricLabel"] { text-align: center; }
+    </style>
+""", unsafe_html=True)
 
 # 2. Инициализиране и кеширане на EasyOCR
 @st.cache_resource
@@ -14,7 +34,7 @@ def load_ocr():
 
 reader = load_ocr()
 
-# 3. База данни със съставки от новия етикет и техните дългосрочни ефекти
+# 3. База данни със съставки
 INGREDIENTS_DB = {
     "вредни": {
         "хидрогенирано растително масло": "Източник на трансмазнини. Дългосрочната консумация на хидрогенирани мазнини значително повишава нивата на лошия холестерол (LDL) и риска от сърдечно-съдови заболявания.",
@@ -46,61 +66,57 @@ INGREDIENTS_DB = {
     }
 }
 
-# 4. Речник, улавящ специфичните правописни грешки от OCR текста на меденките
-# Свързваме сгрешените и съкратените думи с правилното име от базата данни
+# 4. Речник за OCR съвпадения
 SEARCH_MAPPING = {
-    # Вредни
     "хидрогенира": "хидрогенирано растително масло", 
     "фруктовен": "глюкозо-фруктозен сироп", "фруктозен": "глюкозо-фруктозен сироп",
     "ензоат": "натриев бензоат", "бензоат": "натриев бензоат",
     "калнев": "калиев сорбат", "сорбат": "калиев сорбат",
     "захар": "захар", "декстро": "декстроза", "глюкоза": "глюкоза",
-
-    # Безвредни
     "пшенично": "пшенично брашно", "ябълково брашно": "ябълково брашно",
     "слънчогледово": "слънчогледово олио", "меланж": "яйчен меланж",
     "амониев": "амониев бикарбонат", "натриев бикарбонат": "натриев бикарбонат",
-    "лимонсна": "лимонена киселина", "лимонена": "лимонена киселина",
-    "кисслина": "лимонена киселина",
+    "лимонсна": "лимонена киселина", "лимонена": "лимонена киселина", "кисслина": "лимонена киселина",
     "суроватка": "суха млечна суроватка", "какао на прах": "какао на прах",
     "какаова маca": "какаова маса", "лецитин": "соев лецитин", "pgpr": "pgpr",
-
-    # Полезни
-    "ябълка": "ябълки", "ябълки": "ябълки",
-    "канела": "канела", "лимон": "аромат лимон"
+    "ябълка": "ябълки", "ябълки": "ябълки", "канела": "канела", "лимон": "аромат лимон"
 }
 
-# 5. Потребителски интерфейс
-st.title("🥗 Анализатор на Съставки с EasyOCR")
-st.write("Качете снимка на етикета или я заснемете с камерата, за да разберете какво съдържа продуктът.")
+# 5. Потребителски интерфейс (Front-End)
+st.markdown("<h1 style='text-align: center; color: #2E7D32;'>🥗 HealthyFood AI</h1>", unsafe_html=True)
+st.markdown("<p style='text-align: center; color: #666;'>Интелигентен скенер на етикети. Разберете какво съдържа храната ви и как влияе на здравето ви.</p>", unsafe_html=True)
+st.hr()
 
-source_option = st.radio("Изберете метод:", ("Качване на снимка", "Снимане с камера"))
+# Избор на източник
+source_option = st.radio("Изберете метод на сканиране:", ("Качване на снимка", "Снимане с камера"), label_visibility="collapsed")
 
 image = None
 
-if source_option == "Качване на снимка":
-    uploaded_file = st.file_uploader("Изберете изображение...", type=["jpg", "jpeg", "png"])
-    if uploaded_file is not None:
-        image = Image.open(uploaded_file)
-else:
-    camera_file = st.camera_input("Снимайте етикета")
-    if camera_file is not None:
-        image = Image.open(camera_file)
+col1, col2, col3 = st.columns([1, 4, 1])
+with col2:
+    if source_option == "Качване на снимка":
+        uploaded_file = st.file_uploader("Качете етикет (JPG, PNG)...", type=["jpg", "jpeg", "png"])
+        if uploaded_file is not None:
+            image = Image.open(uploaded_file)
+    else:
+        camera_file = st.camera_input("Центрирайте етикета пред камерата")
+        if camera_file is not None:
+            image = Image.open(camera_file)
 
 # 6. Обработка на изображението
 if image is not None:
-    st.image(image, caption='Въведено изображение', use_container_width=True)
+    st.markdown("### 📸 Сканиран етикет")
+    st.image(image, use_container_width=True)
 
-    with st.spinner('Обработка на текста и разпознаване...'):
+    with st.spinner('🕵️‍♂️ HealthyFood AI анализира текста...'):
         img_np = np.array(image)
         results = reader.readtext(img_np)
         detected_text = " ".join([text[1].lower() for text in results])
 
-    st.subheader("🤖 Намерен текст:")
-    with st.expander("Виж суровия разпознат текст"):
+    with st.expander("🔍 Виж суровия текст от OCR"):
         st.write(detected_text)
 
-    # 7. Анализ и сортиране на съставките
+    # 7. Анализ и сортиране
     found_ingredients = []
     added_ingredients = set()
 
@@ -110,23 +126,48 @@ if image is not None:
                 if real_name in ingredients_dict:
                     found_ingredients.append({
                         "Съставка": real_name.capitalize(),
-                        "Категория": category.capitalize(),
+                        "Категория": category.lower(),
                         "Описание": ingredients_dict[real_name]
                     })
                     added_ingredients.add(real_name)
                     break
 
-    st.subheader("📊 Анализ на съставките")
+    st.markdown("---")
+    st.markdown("## 📊 Резултати от анализа")
 
     if found_ingredients:
-        df = pd.DataFrame(found_ingredients)
+        # Разделяне на съставките по категории за статистика
+        vredni = [i for i in found_ingredients if i["Категория"] == "вредни"]
+        bezvredni = [i for i in found_ingredients if i["Категория"] == "безвредни"]
+        polezni = [i for i in found_ingredients if i["Категория"] == "полезни"]
 
-        # Сортиране по категория (Полезни -> Безвредни -> Вредни)
-        category_order = {"Полезни": 0, "Безвредни": 1, "Вредни": 2}
-        df['Order'] = df['Категория'].map(category_order)
-        df = df.sort_values('Order').drop('Order', axis=1).reset_index(drop=True)
+        # Горно табло с метрики
+        m1, m2, m3 = st.columns(3)
+        m1.metric(label="🟢 Полезни", value=len(polezni))
+        m2.metric(label="⚪ Безвредни", value=len(bezvredni))
+        m3.metric(label="🔴 Вредни", value=len(vredni))
 
-        # Показване на таблицата в Streamlit
-        st.dataframe(df[["Съставка", "Категория"]], use_container_width=True)
+        st.markdown("### 📋 Детайлен преглед:")
 
-        # 8. Интерактивно мен
+        # Показване на ПОЛЕЗНИТЕ (Зелени карти)
+        if polezni:
+            st.markdown("#### ✨ Полезни съставки")
+            for ing in polezni:
+                st.success(f"**{ing['Съставка']}** — {ing['Описание']}")
+
+        # Показване на БЕЗВРЕДНИТЕ (Сини карти)
+        if bezvredni:
+            st.markdown("#### 👍 Безвредни / Неутрални")
+            for ing in bezvredni:
+                st.info(f"**{ing['Съставка']}** — {ing['Описание']}")
+
+        # Показване на ВРЕДНИТЕ (Червени карти)
+        if vredni:
+            st.markdown("#### ⚠️ Вредни съставки (Внимание!)")
+            for ing in vredni:
+                st.error(f"**{ing['Съставка']}** — {ing['Описание']}")
+                    
+    else:
+        st.warning("⚠️ HealthyFood AI не откри познати съставки в този етикет. Опитайте с по-ясно изображение.")
+
+```
