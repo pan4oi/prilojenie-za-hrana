@@ -1,8 +1,3 @@
-Готово! Промених заглавията, подзаглавията и мета данните на страницата, така че приложението вече официално се казва **HealthyFood AI**.
-
-Ето пълния обновен код:
-
-```python
 import streamlit as st
 import easyocr
 from PIL import Image
